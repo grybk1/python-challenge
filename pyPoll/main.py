@@ -5,7 +5,8 @@ candidates=[]
 candidatesCounts=[]
 
 def loadData():
-    csvpath = os.path.join( 'Resources', 'test_data.csv')
+    #csvpath = os.path.join( 'Resources', 'test_data.csv')
+    csvpath = os.path.join( 'Resources', 'election_data.csv')
     with open(csvpath, newline='') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',')
             csv_header = next(csvreader)
@@ -31,16 +32,60 @@ def countVotes():
             if y[2]==x:
               counter=counter+1
         row=[x,counter]     
-        print(f" {x}: {counter}")  
+        #print(f" {x}: {counter}")  
         candidatesCounts.append(row)
     counter=0          
               
+def printResults():
+    #calc total votes
+    totalVotes=0
+    for x in candidatesCounts:
+        totalVotes=totalVotes+x[1]
+#        print(f"{x[0]}: {x[1]}")
+    print("Election Results")
+    print("----------------------")
 
+    print(f"Total Votes: {totalVotes}") 
+    print("----------------------")   
+    winner=''
+    topVotes=0
+    for x in candidatesCounts:
+        winPercentage=(x[1]/totalVotes)*100
+        print(f"{x[0]}: {winPercentage.__round__(3)}%  {x[1]}")
+        if x[1]>topVotes:
+            topVotes=x[1]
+            winner=x[0]
+    print("----------------------")
+    print("Winner :" +winner) 
+    print("----------------------")
+    #write results to file
+    outputFile=open("Output/results.txt","w" )
+    outputFile.write("Election Results\n")
+    outputFile.write("----------------------\n")
+    outputFile.write(f"Total Votes: {totalVotes}\n") 
+    outputFile.write("----------------------\n")  
+    winner=''
+    topVotes=0
+    for x in candidatesCounts:
+        winPercentage=(x[1]/totalVotes)*100
+        outputFile.write(f"{x[0]}: {winPercentage.__round__(3)}%  {x[1]}\n")
+        if x[1]>topVotes:
+            topVotes=x[1]
+            winner=x[0]
+    outputFile.write("----------------------\n")
+    outputFile.write("Winner :" +winner+"\n") 
+    outputFile.write("----------------------\n")
+     
+
+
+
+    
 
 
 loadData()
-print(votesList)
+#print(votesList)
 candidates=determineCandidates(votesList)
-print(candidates)
+#print(candidates)
 countVotes()
-print(candidatesCounts)
+#print(candidatesCounts)
+printResults()
