@@ -1,73 +1,61 @@
+# PyPoll Solution Gilbert Rybak
 import os
 import csv
-votesList=[]
-candidates=[]
-candidatesCounts=[]
 
+#variable collections
+votesList=[]        #holds imported CSV
+candidates=[]       #holds list of candidates 
+candidatesCounts=[] #holds election results
+
+
+#Import CSV file
 def loadData():
     #csvpath = os.path.join( 'Resources', 'test_data.csv')
     csvpath = os.path.join( 'Resources', 'election_data.csv')
     with open(csvpath, newline='') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',')
+            #skip header
             csv_header = next(csvreader)
             #print(f"CSV Header: {csv_header}")
             for row in csvreader:
                     votesList.append(row)
                     #print(row)
 
+
+#Get list of candidates from full dataset    
 def determineCandidates(listA):
     candidate_list=[]
     for x in listA:
             if x[2] not in candidate_list:
                 candidate_list.append(x[2])
-                #print(x[2])
-   # for x in candidate_list:
-   #     print(x)  
     return candidate_list               
 
+#Collect election results
 def countVotes():
-    counter=0
+    votes=[]
+    for y in votesList:
+       votes.append(y[2])
+       #print(votes)
     for x in candidates:
-        for y in votesList:
-            if y[2]==x:
-              counter=counter+1
-        row=[x,counter]     
-        #print(f" {x}: {counter}")  
-        candidatesCounts.append(row)
-    counter=0          
-              
-def printResults():
-    #calc total votes
-    totalVotes=0
-    for x in candidatesCounts:
-        totalVotes=totalVotes+x[1]
-#        print(f"{x[0]}: {x[1]}")
-    print("Election Results")
-    print("----------------------")
+        row=[x,votes.count(x)]
+        candidatesCounts.append(row)           
+        #print(row)
+    #print(candidatesCounts)
 
-    print(f"Total Votes: {totalVotes}") 
-    print("----------------------")   
+   
+#Save to text file
+def saveResults():
+    #print(candidatesCounts)
+    totalCount=votesList.__len__()
     winner=''
     topVotes=0
-    for x in candidatesCounts:
-        winPercentage=(x[1]/totalVotes)*100
-        print(f"{x[0]}: {winPercentage.__round__(3)}%  {x[1]}")
-        if x[1]>topVotes:
-            topVotes=x[1]
-            winner=x[0]
-    print("----------------------")
-    print("Winner :" +winner) 
-    print("----------------------")
-    #write results to file
     outputFile=open("Output/results.txt","w" )
     outputFile.write("Election Results\n")
     outputFile.write("----------------------\n")
-    outputFile.write(f"Total Votes: {totalVotes}\n") 
-    outputFile.write("----------------------\n")  
-    winner=''
-    topVotes=0
+    outputFile.write(f"Total Votes: {totalCount}\n") 
+    outputFile.write("----------------------\n")          
     for x in candidatesCounts:
-        winPercentage=(x[1]/totalVotes)*100
+        winPercentage=(x[1]/totalCount)*100
         outputFile.write(f"{x[0]}: {winPercentage.__round__(3)}%  {x[1]}\n")
         if x[1]>topVotes:
             topVotes=x[1]
@@ -75,17 +63,21 @@ def printResults():
     outputFile.write("----------------------\n")
     outputFile.write("Winner :" +winner+"\n") 
     outputFile.write("----------------------\n")
-     
+    outputFile.close()    
 
-
-
+#Retrieve from text file for display     
+def displayResults():
+    inputFile=open("Output/results.txt")  
+    for row in inputFile:
+        print(row)
     
 
-
+#MAIN SECTION     
 loadData()
-#print(votesList)
 candidates=determineCandidates(votesList)
-#print(candidates)
 countVotes()
-#print(candidatesCounts)
-printResults()
+saveResults()
+displayResults()
+
+
+
